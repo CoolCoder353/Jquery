@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APPLE</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <h1>Apple</h1>
+    <p>Bannana</p>
+    <a href="otmfamily.com" style="position: relative;">otmfamily</a>
+    <b></b>
+    <button>A button</button>
+
+    <script>
+        $(document).ready(function () {
+            $("button").click(function () {
+                $(this).hide();
+            });
+            $("h1").hover(function () {
+                $(this).fadeToggle(3000);
+            });
+            $("a").hover(function () {
+                let randomx = Math.floor(Math.random() * 100);
+                let randomy = Math.floor(Math.random() * 100);
+                let up = Math.floor(Math.random() * 2);
+                if (up == 1) {
+                    $(this).animate({
+                        top: `+=${randomx}`,
+                        left: `+=${randomy}`
+                    }, 10);
+                }
+                else {
+                    $(this).animate({
+                        top: `-=${randomx}`,
+                        left: `-=${randomy}`
+                    }, 10);
+                }
+
+                //Clamp to the size of the window
+                let windowWidth = $(window).width();
+                let windowHeight = $(window).height();
+                let elementWidth = $(this).width();
+                let elementHeight = $(this).height();
+
+                let position = $(this).position();
+
+                if (position.left + elementWidth > windowWidth) {
+                    $(this).css("left", windowWidth - elementWidth);
+                }
+
+                if (position.top + elementHeight > windowHeight) {
+                    $(this).css("top", windowHeight - elementHeight);
+                }
+
+                if (position.left < 0) {
+                    $(this).css("left", 0);
+                }
+
+                if (position.top < 0) {
+                    $(this).css("top", 0);
+                }
+
+
+
+
+            });
+
+
+
+
+        });
+    </script>
+</body>
+
+</html>
