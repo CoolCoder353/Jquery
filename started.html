@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <title>Stuff and Things</title>
+</head>
+
+<body>
+    <h1 class="clickable" id="apple">APPPLE</h1>
+
+    <script>
+        function clicked(element) {
+            $(element).hide();
+        }
+
+        function getRandomColor() {
+            const r = Math.floor(Math.random() * 256);
+            const g = Math.floor(Math.random() * 256);
+            const b = Math.floor(Math.random() * 256);
+            return `rgb(${r}, ${g}, ${b})`;
+        }
+
+        $(document).ready(function () {
+            setInterval(function () {
+                // Expanded list of fruits
+                const words = [
+                    "apple", "banana", "cherry", "date", "elderberry", "fig",
+                    "grape", "honeydew", "kiwi", "lemon", "mango", "nectarine",
+                    "orange", "pear", "quince", "raspberry", "strawberry",
+                    "tangerine", "ugli", "watermelon", "apricot", "blackberry",
+                    "cantaloupe", "dragonfruit", "gooseberry", "jackfruit",
+                    "lime", "mandarin", "melon", "papaya", "passionfruit",
+                    "pomegranate", "starfruit", "tamarind", "coconut",
+                    "blueberry", "cranberry", "currant", "durian", "grapefruit",
+                    "huckleberry", "lingonberry", "persimmon", "soursop",
+                    "tangerine", "zucchini", // Previous fruits
+                    "blood orange", "chikoo", "clementine", "dragonfruit", "feijoa",
+                    "jackfruit", "kumquat", "longan", "mulberry", "nectarine",
+                    "olive", "pawpaw", "rambutan", "sapote", "soursop",
+                    "tamarillo", "white currant", "yuzu", "ziziphus", "jackfruit",
+                    "bilberry", "cocona" // New additions
+                ];
+
+                const font = ["Arial", "Verdana", "Helvetica", "Tahoma", "Trebuchet MS", "Times New Roman", "Georgia", "Garamond", "Courier New", "Brush Script MT"];
+                const sizes = ["10px", "12px", "14px", "16px", "18px", "20px", "22px", "24px", "26px", "28px", "30px", "32px", "34px", "36px", "38px", "40px", "42px", "44px", "46px", "48px"];
+
+                // Create a new word element
+                const word = words[Math.floor(Math.random() * words.length)];
+                const color = getRandomColor(); // Get a random RGB color
+                const fontFamily = font[Math.floor(Math.random() * font.length)];
+                const size = sizes[Math.floor(Math.random() * sizes.length)];
+                const left = Math.floor(Math.random() * 90); // Adjusted to prevent overflow
+                const top = Math.floor(Math.random() * 90);  // Adjusted to prevent overflow
+
+                $("body").append(`<h1 class='clickable' onclick='clicked(this)' style='color:${color}; font-family:${fontFamily}; font-size:${size}; position:absolute; left:${left}%; top:${top}%;'>${word}</h1>`);
+            }, 80);
+        });
+    </script>
+</body>
+
+</html>
