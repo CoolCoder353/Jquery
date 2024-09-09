@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <title>Hosipital stuff</title>
+</head>
+
+<body>
+    <h1 id="title">Ajax Example</h1>
+    <h3>Queensland Hospitals:</h3>
+    <select id="options" onChange="changed()">
+        <option>Loading...</option>
+    </select>
+    <br><br>
+    <table>
+        <tr>
+            <td>Facility Name:</td>
+            <td><span id="facility"></span></td>
+        </tr>
+        <tr>
+            <td>Address:</td>
+            <td><span id="address"></span></td>
+        </tr>
+        <tr>
+            <td>Phone Number:</td>
+            <td><span id="phone"></span></td>
+        </tr>
+        <tr>
+            <td>Fax Number:</td>
+            <td><span id="fax"></span></td>
+        </tr>
+    </table>
+
+    <script>
+        $(document).ready(function () {
+            //you would need to replace this with your api endpoint url
+            var
+                url = 'https://www.data.qld.gov.au/api/3/action/datastore_search?resource_id=7de61fec-6670-4cad-a163-d955f0102cef';
+            $.get(url, onDataReceived);
+        });
+
+        function onDataReceived(data) {
+            //console.log(data);
+            mydata = data.result.records;
+            console.log(mydata);
+
+            var options = $('#options');
+
+            for (var i = 0; i < mydata.length; i++) {
+
+                if (mydata[i].FacilityName != null && mydata[i].FacilityName != "" && mydata[i].FacilityName != " ") {
+                    var option = $('<option></option>');
+                    option.text(mydata[i]["FacilityName"]);
+                    option.val(i);
+                    options.append(option);
+
+                    console.log(mydata[i]);
+                }
+            }
+        }
+
+        $("option").change(function () {
+            var index = $(this).val();
+            var facility = mydata[index].FacilityName;
+            var address = mydata[index].Address;
+            var phone = mydata[index].PhoneNumber;
+            var fax = mydata[index].FaxNumber;
+
+            $("#facility").text(facility);
+            $("#address").text(address);
+            $("#phone").text(phone);
+            $("#fax").text(fax);
+        })
+    </script>
+</body>
+
+</html>

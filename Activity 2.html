@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oscar's Awesome Quiz</title>
+    <!-- Bootstrap CSS -->
+
+    <link rel="stylesheet" href="activity.css">
+
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Get all questions right and win a prize</h1>
+
+        <!-- Collapsible Configure Section -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <a class="btn btn-link" data-toggle="collapse" href="#configureSection" role="button"
+                    aria-expanded="false" aria-controls="configureSection">
+                    Configure Your Quiz
+                </a>
+            </div>
+            <div class="collapse" id="configureSection">
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="category">Select Category</label>
+                        <select class="form-control" id="category">
+                            <option>General Knowledge</option>
+                            <option>Science</option>
+                            <option>History</option>
+                            <option>Sports</option>
+                            <option>Entertainment</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="numQuestions">Number of Questions</label>
+                        <select class="form-control" id="numQuestions">
+                            <option>5</option>
+                            <option>10</option>
+                            <option>15</option>
+                            <option>20</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="difficulty">Select Difficulty</label>
+                        <select class="form-control" id="difficulty">
+                            <option value="easy">Easy</option>
+                            <option value="medium">Medium</option>
+                            <option value="hard">Hard</option>
+                        </select>
+                    </div>
+                    <button id="start" type="submit" class="btn btn-primary">Start Quiz</button>
+                    <button id="reset" type="submit" class="btn btn-primary" hidden>Reset Quiz</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Question Display Section -->
+        <div class="card mt-4">
+            <div class="card-header">
+                Current Question
+            </div>
+            <div class="card-body">
+                <h5 id="questionText">Question will appear here</h5>
+                <div id="answers" class="container">
+                    <div class="row">
+                        <div class="col-6 d-flex justify-content-center">
+                            <button id="answer1" type="button"
+                                class="list-group-item list-group-item-action square-button">Answer
+                                1</button>
+                        </div>
+                        <div class="col-6 d-flex justify-content-center">
+                            <button id="answer2" type="button"
+                                class="list-group-item list-group-item-action square-button">Answer
+                                2</button>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-6 d-flex justify-content-center">
+                            <button id="answer3" type="button"
+                                class="list-group-item list-group-item-action square-button">Answer
+                                3</button>
+                        </div>
+                        <div class="col-6 d-flex justify-content-center">
+                            <button id="answer4" type="button"
+                                class="list-group-item list-group-item-action square-button">Answer
+                                4</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        let questions = [];
+        let currentQuestion = 0;
+        let correctAnswers = 0;
+
+        let sessionToken = "";
+
+        function decodeHtmlEntities(text) {
+            var textArea = document.createElement('textarea');
+            textArea.innerHTML = text;
+            return textArea.value;
+        }
+
+        $(document).ready(function () {
+
+            function displayQuestion() {
+                let question = questions[currentQuestion];
+                $("#questionText").text(decodeHtmlEntities(question.question));
+                let answers = question.incorrect_answers.map(decodeHtmlEntities);
+                answers.push(decodeHtmlEntities(question.correct_answer));
+                answers = answers.sort(() => Math.random() - 0.5);
+                $("#answers button").removeClass("btn-success btn-danger bg-success bg-danger text-white");
+                $("#answers button").prop("disabled", true).prop("hidden", true);
+                for (let i = 0; i < answers.length; i++) {
+                    $(`#answer${i + 1}`).text(answers[i]).prop("disabled", false).prop("hidden", false);
+                }
+            }
+
+            // Get a session token
+            $.get("https://opentdb.com/api_token.php?command=request", function (result, status) {
+                console.log("__________________GET TOKEN ________________________");
+                console.log(status);
+                console.log(result);
+
+                if (status != "success") {
+                    alert("Failed to get token");
+                    return;
+                }
+
+                sessionToken = result.token;
+            });
+
+            // Populate the category dropdown from API
+            $.get("https://opentdb.com/api_category.php", function (result, status) {
+                console.log("__________________GET CATEGORIES ________________________");
+                console.log(status);
+                console.log(result);
+                if (status != "success") {
+                    alert("Failed to get categories");
+                    return;
+                }
+                let categories = result.trivia_categories;
+                $("#category").empty();
+                for (let i = 0; i < categories.length; i++) {
+                    $("#category").append(`<option value="${categories[i].id}">${categories[i].name}</option>`)
+                }
+            });
+
+            $("#start").click(function () {
+                let category = $("#category").val();
+                let numQuestions = $("#numQuestions").val();
+                let difficulty = $("#difficulty").val();
+                console.log(category + " " + numQuestions + " " + difficulty);
+                console.log(`https://opentdb.com/api.php?amount=${numQuestions}&category=${category}&difficulty=${difficulty}&token=${sessionToken}&encode=url3986`);
+                $.get(`https://opentdb.com/api.php?amount=${numQuestions}&category=${category}&difficulty=${difficulty}&token=${sessionToken}`, function (result, status) {
+                    console.log("__________________GET QUESTIONS ________________________");
+                    console.log(status);
+                    console.log(result);
+                    if (status != "success") {
+                        alert("Failed to get questions");
+                        return;
+                    }
+                    questions = result.results;
+                    currentQuestion = 0;
+                    correctAnswers = 0;
+                    displayQuestion();
+                });
+            });
+
+            $("#answers button").click(function () {
+                let question = questions[currentQuestion];
+                let correctAnswer = decodeHtmlEntities(question.correct_answer);
+                let selectedAnswer = $(this).text();
+                if (selectedAnswer == correctAnswer) {
+                    $(this).addClass("btn-success bg-success text-white");
+                    correctAnswers++;
+                } else {
+                    $(this).addClass("btn-danger bg-danger text-white");
+
+                    // Highlight the correct answer
+                    for (let i = 0; i < 4; i++) {
+                        if ($(`#answer${i + 1}`).text() == correctAnswer) {
+                            $(`#answer${i + 1}`).addClass("btn-success bg-success text-white");
+                        }
+                    }
+                }
+                currentQuestion++;
+                if (currentQuestion < questions.length) {
+                    $("#answers button").prop("disabled", true);
+                    setTimeout(displayQuestion, 5000);
+                } else {
+                    alert(`You got ${correctAnswers} out of ${questions.length} correct`);
+                    $("#reset").prop("hidden", false);
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+  <h1 id="title">Register here</h1>
+  <p class="paragraph">Enter your registration details here:</p>
+
+  <table>
+    <tr>
+      <td>Name:</td>
+      <td><input type="text" maxlength="30"></input></td>
+    </tr>
+    <tr>
+      <td>Email:</td>
+      <td><input type="email" id="first"></input></td>
+      <td><input type="email" id="second"></input></td>
+    </tr>
+    <tr>
+      <td>Phone:</td>
+      <td><input type="tel"></input></td>
+    </tr>
+  </table>
+
+
+  <script>
+    $(document).ready(function () {
+      $("input").change(function () {
+        let name = $("input[type='text']").val();
+        let email = $("#first").val();
+        let emailsecond = $("#second").val();
+        let phone = $("input[type='tel']").val();
+        let isvalid = true;
+
+        //Check phone
+        if (phone.length > 0) {
+          let phonePattern = /^\d{10}/;
+          if (!phonePattern.test(phone)) {
+            isvalid = false
+            alert("Phone number must be in the format xxx-xxx-xxxx");
+          }
+        }
+        //Check email
+        if (email.length > 0) {
+          let emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+          if (!emailPattern.test(email) || email != emailsecond) {
+            isvalid = false
+            alert("Email must be in the format x@x.x and the two emails must match");
+          }
+        }
+        //check name contains space
+        if (name.length > 0) {
+          let namePattern = /\s/;
+          if (!namePattern.test(name)) {
+            isvalid = false
+            alert("Name must contain a space")
+          }
+        }
+
+        if (name.length > 0 && email.length > 0 && phone.length > 0 && isvalid) {
+          alert("Thank you for registering!");
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>
